@@ -54,7 +54,7 @@ length(vdate[[1]])
 
 colnames(vdate) <- 'date_time' #renaming vector to match other merge datafram
 
-
+vdate
 
 # Rounding dates to their hour, Frankensteining date & hour together, then converting to POSIX
 
@@ -81,7 +81,6 @@ clean_well <- G_561_T %>%
   select(date_time, mean_corr)
 
 
-
 #calc avg stdev
 
 meandepth = mean(clean_well$mean_corr, na.rm=TRUE)
@@ -98,6 +97,30 @@ rm(list=setdiff(ls(), "final_df"))
 
 str(final_df)
 
+View(final_df)
+
+
+
+#starting HW2: average hourly into monthly data
+
+final_df <- 
+cbind(final_df, month(final_df$date_time),
+(day(final_df$date_time)))
+
+colnames(final_df) <- c('datetime', 'mean', 'month', 'day')
+
+View(final_df)
+
+final_df$NewCol <- do.call(paste, c(final_df1[c("month", "day")], sep = "")) 
+View(final_df)
+
+monthly <- final_df %>%
+  group_by(NewCol) 
+  #summarise(mean1=mean(final_df$mean)) %>%
+  #select(NewCol, mean1)
+View(monthly)
+
+#monthly fix to summarize
 
 
 #Creation of Time Series Data Object
@@ -105,10 +128,11 @@ str(final_df)
 df <- ts(final_df$mean_corr, start = c(2007,10,5,0), frequency = 8760)
 
 
-
 # Time Series Decomposition ...STL# #STL=Seasonal, Trend, Low S
 
 decomp_stl <- stl(df, s.window = 7, na.action = na.approx) 
+
+
 
 #Depth= time series object, 
 
