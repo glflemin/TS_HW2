@@ -67,7 +67,7 @@ G_561_T$date_time <- paste(G_561_T$date," ", lubridate::hour(G_561_T$time),":00:
 G_561_T$date_time <- as.POSIXct(G_561_T$date_time, tz="EST")
 
 
-
+View(G_561_T)
 
 
 #grouping water levels by taking average of each hour
@@ -80,6 +80,7 @@ clean_well <- G_561_T %>%
   
   select(date_time, mean_corr)
 
+View(clean_well)
 
 #calc avg stdev
 
@@ -103,26 +104,28 @@ View(final_df)
 
 #starting HW2: average hourly into monthly data
 
-final_df <- 
+hw2 <- 
 cbind(final_df, month(final_df$date_time),
-(day(final_df$date_time)))
+(year(final_df$date_time)))
 
-colnames(final_df) <- c('datetime', 'mean', 'month', 'day')
+colnames(hw2) <- c('datetime', 'well', 'month', 'year')
 
-View(final_df)
+View(hw2)
 
-final_df$NewCol <- do.call(paste, c(final_df1[c("month", "day")], sep = "")) 
-View(final_df)
+hw2$MonYear <- do.call(paste, c(hw2[c("month", "year")], sep = "-")) 
+View(hw2)
 
-monthly <- final_df %>%
-  group_by(NewCol) 
-  #summarise(mean1=mean(final_df$mean)) %>%
-  #select(NewCol, mean1)
-View(monthly)
+hw2_agg <-aggregate(well ~ MonYear, hw2, mean)
 
-#monthly fix to summarize
+View(hw2_agg)
 
 
+
+
+
+
+
+#to come later....
 #Creation of Time Series Data Object
 
 df <- ts(final_df$mean_corr, start = c(2007,10,5,0), frequency = 8760)
