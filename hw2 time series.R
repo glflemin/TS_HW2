@@ -34,17 +34,17 @@ rm(list=ls())
 
 
 
-#setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
+setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
 #setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
-setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
+#setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
-#wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
+wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
+#wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
@@ -223,4 +223,13 @@ HWES.welldepth <- hw(df, seasonal = "additive")
 summary(HWES.welldepth)
 
 plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (units)")
+abline(v = 2008.25, col = "red", lty = "dashed")
+
+#######################################################################
+
+# Building a Linear/Holt Exponential Smoothing Model#
+LES.WellDepth <- holt(df, initial = "optimal", h = 6)
+summary(LES.WellDepth)
+
+plot(LES.WellDepth, main = "Well Water Depth w/ Linear Exponential Smoothing", xlab = "Date", ylab = "Depth (Units)")
 abline(v = 2008.25, col = "red", lty = "dashed")
