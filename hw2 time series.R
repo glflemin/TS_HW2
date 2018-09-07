@@ -151,6 +151,7 @@ testset <- rbind(testset, r6)
 
 trainset <- hw2_agg[-c(119, 129, 22, 33, 44, 11), ]
 
+testset <- testset[-1,]
 testset # this our test (holdout) set
 trainset # this is our training set with the test rows removed
 
