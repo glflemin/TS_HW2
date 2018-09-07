@@ -16,6 +16,12 @@ library(stringi)
 
 library(tidyverse)
 
+library(forecast)
+library(fma)
+library(tseries)
+library(expsmooth)
+library(lmtest)
+
 # for cleaning global environment
 
 rm(list=ls())
@@ -28,15 +34,17 @@ rm(list=ls())
 
 
 
-setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
+#setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
 #setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
+setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
+#wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
+wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
@@ -118,7 +126,7 @@ colnames(hw2) <- c('datetime', 'well', 'month', 'year')
 
 View(hw2)
 
-hw2$MonYear <- do.call(paste, c(hw2[c("month", "year")], sep = "-")) 
+hw2$MonYear <- do.call(paste, c(hw2[c("year", "month")], sep = "-")) 
 View(hw2)
 
 hw2_agg <-aggregate(well ~ MonYear, hw2, mean)
@@ -135,12 +143,12 @@ testset <- tibble('MonYear'='goddamnit', 'well'=1.1)
 names(testset) <- c('MonYear', 'well')
 
 
-r1 <- as.tibble(hw2_agg[119, ])
-r2 <- as.tibble(hw2_agg[129, ])
-r3 <- as.tibble(hw2_agg[22, ])
-r4 <- as.tibble(hw2_agg[33, ])
-r5 <- as.tibble(hw2_agg[44, ])
-r6 <- as.tibble(hw2_agg[11, ])
+r1 <- as.tibble(hw2_agg[124, ])
+r2 <- as.tibble(hw2_agg[125, ])
+r3 <- as.tibble(hw2_agg[126, ])
+r4 <- as.tibble(hw2_agg[127, ])
+r5 <- as.tibble(hw2_agg[128, ])
+r6 <- as.tibble(hw2_agg[129, ])
 
 testset <- rbind(testset, r1)
 testset <- rbind(testset, r2)
@@ -149,11 +157,27 @@ testset <- rbind(testset, r4)
 testset <- rbind(testset, r5)
 testset <- rbind(testset, r6)
 
-trainset <- hw2_agg[-c(119, 129, 22, 33, 44, 11), ]
+trainset <- hw2_agg[-c(124:129), ]
 
-testset <- testset[-1,]
 testset # this our test (holdout) set
-trainset # this is our training set with the test rows removed
+trainset # this is our training set with the test rows removed   ##THIS NEEDS TO BE SORTED
+
+## Sorts the training set ##
+test <- grepl(".*-[0-9][0-9]$", trainset$MonYear)
+
+#test2=c(1:123)
+for (i in 1:123) {
+  if (!test[i]) {
+    trainset$MonYear[i] <- paste(substr(trainset$MonYear[i],1,4), "-0", substr(trainset$MonYear[i], 6, 6), sep="")
+  }
+  #else {
+  #  trainset$MonYear[i] <- trainset$MonYear[i]
+  #}
+}
+
+#hw2_agg2 <- cbind(hw2_agg, test2)
+trainset <- trainset[order(trainset$MonYear),]
+
 
 ############################################# JUNK CODE
 hw2_test <-  gsub("-", ".", hw2_agg$MonYear)
@@ -167,7 +191,7 @@ test<- strReverse(hw2_agg$MonYear)
 #to come later....
 #Creation of Time Series Data Object
 
-df <- ts(trainset$well, start = c(1-2008), frequency = 12)
+welldepth <- ts(trainset$well, start = 2007, frequency = 12)       ### start value is not correct
 
 
 # Time Series Decomposition ...STL# #STL=Seasonal, Trend, Low S
@@ -176,22 +200,31 @@ decomp_stl <- stl(df, s.window = 7, na.action = na.approx)
 
 
 
-#Well= time series object, 
+#Depth= time series object, 
+
+#s.window you have to have this, and it should be odd and no less than 7.  Moving average.
 
 
 
 #Plot Decomposition
+
 plot(decomp_stl)
+
 plot.ts(df, xlab = "Year", ylab = "Depth (Ft)")
+
 plot(df, xlab = "Year", ylab = "Depth (Ft)")
 
 
-#Plotting the Trend/Cycle over the actual Values of Well Depth
+
 plot(df, col = "grey", main = "Well Depth - Trend/Cycle", xlab = "Year", ylab = "Depth (Feet) ", lwd = 2)
+
 lines(decomp_stl$time.series[,2], col = "red", lwd = 2)#plotting the trend line on the time series data
 
-#Plotting Seasonally Adjusted water values
-well_pass <- df-decomp_stl$time.series[,1]
-plot(df, col = "grey", main = "Well Depth - Seasonally Adjusted", xlab = "", ylab = "Well Depth", lwd = 2)
-lines(well_pass, col = "red", lwd = 2)
+################################ ESM Models ##########################
 
+## Holt-Winters Additive
+HWES.welldepth <- hw(welldepth, seasonal = "additive")
+summary(HWES.welldepth)
+
+plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (units)")
+abline(v = 2008.25, col = "red", lty = "dashed")
