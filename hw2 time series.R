@@ -2,6 +2,8 @@
 
 #if you don't have any of these, install them
 
+install.packages("stringi")
+
 library(readxl)
 
 library(lubridate)
@@ -9,6 +11,10 @@ library(lubridate)
 library(dplyr)
 
 library(zoo)
+
+library(stringi)
+
+library(tidyverse)
 
 # for cleaning global environment
 
@@ -24,14 +30,14 @@ rm(list=ls())
 
 #setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
-
-setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
+setwd("C:\\Users\\Grant\Downloads\\")
+#setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
 
 # importing the Excel file
 
-wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
+#wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-
+wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
 G_561_T <- read_excel(wbpath, sheet=3) # need the full filepath to make this work
@@ -101,12 +107,12 @@ str(final_df)
 View(final_df)
 
 
+##########################################################
+###  Starting HW2: average hourly into monthly data    ###
+##########################################################
 
-#starting HW2: average hourly into monthly data
-
-hw2 <- 
-cbind(final_df, month(final_df$date_time),
-(year(final_df$date_time)))
+hw2 <- cbind(final_df, month(final_df$date_time),
+             (year(final_df$date_time)))
 
 colnames(hw2) <- c('datetime', 'well', 'month', 'year')
 
@@ -119,12 +125,44 @@ hw2_agg <-aggregate(well ~ MonYear, hw2, mean)
 
 View(hw2_agg)
 
+############################################# GRANT CODE
+
+# Now to split into train and test split 
+
+# The actual, working stuff!
+testlist = c(119, 129, 22, 33, 44, 11) # row #'s that need to be pulled out for the test set
+testset <- tibble('MonYear'='goddamnit', 'well'=1.1)
+names(testset) <- c('MonYear', 'well')
 
 
+r1 <- as.tibble(hw2_agg[119, ])
+r2 <- as.tibble(hw2_agg[129, ])
+r3 <- as.tibble(hw2_agg[22, ])
+r4 <- as.tibble(hw2_agg[33, ])
+r5 <- as.tibble(hw2_agg[44, ])
+r6 <- as.tibble(hw2_agg[11, ])
+
+testset <- rbind(testset, r1)
+testset <- rbind(testset, r2)
+testset <- rbind(testset, r3)
+testset <- rbind(testset, r4)
+testset <- rbind(testset, r5)
+testset <- rbind(testset, r6)
+
+trainset <- hw2_agg[-c(119, 129, 22, 33, 44, 11), ]
+
+testset # this our test (holdout) set
+trainset # this is our training set with the test rows removed
+
+############################################# JUNK CODE
+hw2_test <-  gsub("-", ".", hw2_agg$MonYear)
+strReverse <- function(x)
+  sapply(lapply(strsplit(x, NULL), rev), paste, collapse="")
+test<- strReverse(hw2_agg$MonYear)
+############################################# JUNK CODE 
 
 
-
-
+################################################################### END OF GRANT CODE 
 #to come later....
 #Creation of Time Series Data Object
 
