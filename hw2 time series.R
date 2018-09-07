@@ -230,4 +230,15 @@ abline(v = 2018, col = "red", lty = "dashed")
 #Calulate MAPE
 HWES.test.results=forecast(HWES.welldepth, h=6)
 error=testset$well-HWES.test.results$mean
-HWES_MAPE=mean(abs(error)/abs(testset$well))
+HWES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy (MAPE) = 120%
+
+## Single ##
+SES.welldepth <- ses(df, initial = "optimal", h = 6)
+summary(SES.welldepth)
+
+plot(SES.welldepth, main = "Well G_561_T water depth with Simple ESM Forecast", xlab = "Date", ylab = "Depth (Ft)")
+abline(v = 1992, col = "red", lty = "dashed")
+
+SES.test.results=forecast(SES.welldepth, h=6)
+error=testset$well-SES.test.results$mean
+SES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 240%
