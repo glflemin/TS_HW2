@@ -28,16 +28,16 @@ rm(list=ls())
 
 
 
-#setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
+setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
-setwd("C:\\Users\\Grant\Downloads\\")
+#setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
-#wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
+wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
+#wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
 G_561_T <- read_excel(wbpath, sheet=3) # need the full filepath to make this work
@@ -167,7 +167,7 @@ test<- strReverse(hw2_agg$MonYear)
 #to come later....
 #Creation of Time Series Data Object
 
-df <- ts(final_df$mean_corr, start = c(2007,10,5,0), frequency = 8760)
+df <- ts(trainset$well, start = c(1-2008), frequency = 12)
 
 
 # Time Series Decomposition ...STL# #STL=Seasonal, Trend, Low S
@@ -176,22 +176,22 @@ decomp_stl <- stl(df, s.window = 7, na.action = na.approx)
 
 
 
-#Depth= time series object, 
-
-#s.window you have to have this, and it should be odd and no less than 7.  Moving average.
+#Well= time series object, 
 
 
 
 #Plot Decomposition
-
 plot(decomp_stl)
-
 plot.ts(df, xlab = "Year", ylab = "Depth (Ft)")
-
 plot(df, xlab = "Year", ylab = "Depth (Ft)")
 
 
-
+#Plotting the Trend/Cycle over the actual Values of Well Depth
 plot(df, col = "grey", main = "Well Depth - Trend/Cycle", xlab = "Year", ylab = "Depth (Feet) ", lwd = 2)
-
 lines(decomp_stl$time.series[,2], col = "red", lwd = 2)#plotting the trend line on the time series data
+
+#Plotting Seasonally Adjusted water values
+well_pass <- df-decomp_stl$time.series[,1]
+plot(df, col = "grey", main = "Well Depth - Seasonally Adjusted", xlab = "", ylab = "Well Depth", lwd = 2)
+lines(well_pass, col = "red", lwd = 2)
+
