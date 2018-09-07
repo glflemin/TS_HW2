@@ -150,7 +150,7 @@ r4 <- as.tibble(hw2_agg[127, ])
 r5 <- as.tibble(hw2_agg[128, ])
 r6 <- as.tibble(hw2_agg[129, ])
 
-testset <- rbind(testset, r1)
+testset <- r1
 testset <- rbind(testset, r2)
 testset <- rbind(testset, r3)
 testset <- rbind(testset, r4)
@@ -191,7 +191,7 @@ test<- strReverse(hw2_agg$MonYear)
 #to come later....
 #Creation of Time Series Data Object
 
-df <- ts(trainset$well, start = 2007, frequency = 12)       ### start value is not correct
+df <- ts(trainset$well, start = c(2007,10), frequency = 12)       ### start value is not correct
 
 
 # Time Series Decomposition ...STL# #STL=Seasonal, Trend, Low S
@@ -218,9 +218,16 @@ plot(df, col = "grey", main = "Well Depth - Seasonally Adjusted", xlab = "", yla
 lines(well_pass, col = "red", lwd = 2)
 ################################ ESM Models ##########################
 
-## Holt-Winters Additive
-HWES.welldepth <- hw(df, seasonal = "additive")
+## Holt-Winters Additive ##
+#Model and Summary
+HWES.welldepth <- hw(df, seasonal = "additive", h=6)
 summary(HWES.welldepth)
 
-plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (units)")
-abline(v = 2008.25, col = "red", lty = "dashed")
+#Basic Plot
+plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (Ft)")
+abline(v = 2018, col = "red", lty = "dashed")
+
+#Calulate MAPE
+HWES.test.results=forecast(HWES.welldepth, h=6)
+error=testset$well-HWES.test.results$mean
+HWES_MAPE=mean(abs(error)/abs(testset$well))
