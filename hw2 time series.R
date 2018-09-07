@@ -191,7 +191,7 @@ test<- strReverse(hw2_agg$MonYear)
 #to come later....
 #Creation of Time Series Data Object
 
-welldepth <- ts(trainset$well, start = 2007, frequency = 12)       ### start value is not correct
+df <- ts(trainset$well, start = 2007, frequency = 12)       ### start value is not correct
 
 
 # Time Series Decomposition ...STL# #STL=Seasonal, Trend, Low S
@@ -199,31 +199,27 @@ welldepth <- ts(trainset$well, start = 2007, frequency = 12)       ### start val
 decomp_stl <- stl(df, s.window = 7, na.action = na.approx) 
 
 
-
-#Depth= time series object, 
-
-#s.window you have to have this, and it should be odd and no less than 7.  Moving average.
-
-
+#Well= time series object, 
 
 #Plot Decomposition
 
 plot(decomp_stl)
-
 plot.ts(df, xlab = "Year", ylab = "Depth (Ft)")
-
 plot(df, xlab = "Year", ylab = "Depth (Ft)")
 
 
-
+#Plotting the Trend/Cycle over the actual Values of Well Depth
 plot(df, col = "grey", main = "Well Depth - Trend/Cycle", xlab = "Year", ylab = "Depth (Feet) ", lwd = 2)
-
 lines(decomp_stl$time.series[,2], col = "red", lwd = 2)#plotting the trend line on the time series data
 
+#Plotting Seasonally Adjusted water values
+well_pass <- df-decomp_stl$time.series[,1]
+plot(df, col = "grey", main = "Well Depth - Seasonally Adjusted", xlab = "", ylab = "Well Depth", lwd = 2)
+lines(well_pass, col = "red", lwd = 2)
 ################################ ESM Models ##########################
 
 ## Holt-Winters Additive
-HWES.welldepth <- hw(welldepth, seasonal = "additive")
+HWES.welldepth <- hw(df, seasonal = "additive")
 summary(HWES.welldepth)
 
 plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (units)")
