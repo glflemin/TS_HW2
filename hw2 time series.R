@@ -34,17 +34,17 @@ rm(list=ls())
 
 
 
-#setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
+setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
 #setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
-setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
+#setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
-#wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
+wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
+#wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
@@ -223,6 +223,7 @@ lines(well_pass, col = "red", lwd = 2)
 HWES.welldepth <- hw(df, seasonal = "additive", h=6)
 summary(HWES.welldepth)
 
+<<<<<<< HEAD
 #Basic Plot
 plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (Ft)")
 abline(v = 2018, col = "red", lty = "dashed")
@@ -242,3 +243,16 @@ abline(v = 1992, col = "red", lty = "dashed")
 SES.test.results=forecast(SES.welldepth, h=6)
 error=testset$well-SES.test.results$mean
 SES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 240%
+=======
+plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (units)")
+abline(v = 2008.25, col = "red", lty = "dashed")
+
+#######################################################################
+
+# Building a Linear/Holt Exponential Smoothing Model#
+LES.WellDepth <- holt(df, initial = "optimal", h = 6)
+summary(LES.WellDepth)
+
+plot(LES.WellDepth, main = "Well Water Depth w/ Linear Exponential Smoothing", xlab = "Date", ylab = "Depth (Units)")
+abline(v = 2008.25, col = "red", lty = "dashed")
+>>>>>>> 0dc9f2a09c721619f2ff6e8d51885aba31bcac80
