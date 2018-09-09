@@ -263,3 +263,13 @@ all_data <- ts(hw2_agg$well, start=c(2007, 10), frequency=12)
 
 plot(all_data)
 lines(predicted, col="red")
+
+
+#plotting the LES Model Forcast with actual testset
+predictedLES <- ts(LES.WellDepth$mean, start=c(2018,1), frequency=12)
+actual <- ts(testset$well, start=c(2018,1), frequency=12)
+all_data <- ts(hw2_agg$well, start=c(2007, 10), frequency=12)
+
+plot(all_data, main = 'Linear/Holt ESM Forecast')
+lines(predictedLES, col="red")
+
