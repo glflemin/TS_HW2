@@ -259,6 +259,7 @@ LES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 236%
 ##################################   Plot best model forecast with actual testset   ########################################################3
 predicted <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
 actual <- ts(testset$well, start=c(2018,1), frequency=12)
+all_data <- ts(hw2_agg$well, start=c(2007, 10), frequency=12)
 
-plot(actual)
+plot(all_data)
 lines(predicted, col="red")
