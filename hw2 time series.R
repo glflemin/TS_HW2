@@ -256,6 +256,33 @@ LES.test.results=forecast(LES.WellDepth, h=6)
 error=testset$well-LES.test.results$mean
 LES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 236%
 
+#######################################################################
+
+## Holt Damped ##
+LDES.welldepth <- holt(df, initial = "optimal", h = 6, damped = TRUE)
+summary(LDES.welldepth)
+
+plot(LDES.welldepth, main = "Well G_561_T water depth with Damped Holt ESM Forecast", xlab = "Date", ylab = "Depth (Ft)")
+abline(v = 2018, col = "red", lty = "dashed")
+
+LDES.test.results=forecast(LDES.welldepth, h=6)
+error=testset$well-LDES.test.results$mean
+LDES_MAPE=mean(abs(error)/abs(testset$well))   
+LDES_MAPE ##Model Accuracy = 239%
+
+
+#######################################################################
+
+## Holt-Winters Multiplicative ##
+#Model and Summary
+HWES_Mult.welldepth <- hw(df+1, seasonal = "multiplicative", h=6) 
+# transformed by adding constant of 1 for successful exectuion
+# otherwise, get error value "Inappropriate model for data with negative or zero values".
+# We should discard this model for this reason
+# I'm still curious on the results but didn't have the time to identify which components of the list output
+# needed be corrected by -1 and/or discarded entirely.
+
+
 ##################################   Plot best model forecast with actual testset   ########################################################3
 predicted <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
 actual <- ts(testset$well, start=c(2018,1), frequency=12)
