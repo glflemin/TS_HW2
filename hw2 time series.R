@@ -34,17 +34,17 @@ rm(list=ls())
 
 
 
-setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
+#setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
 #setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
-#setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
+setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-#wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
+#wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
+wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
@@ -138,7 +138,7 @@ View(hw2_agg)
 # Now to split into train and test split 
 
 # The actual, working stuff!
-testlist = c(119, 129, 22, 33, 44, 11) # row #'s that need to be pulled out for the test set
+#testlist = c(119, 129, 22, 33, 44, 11) # row #'s that need to be pulled out for the test set
 testset <- tibble('MonYear'='goddamnit', 'well'=1.1)
 names(testset) <- c('MonYear', 'well')
 
@@ -180,10 +180,10 @@ trainset <- trainset[order(trainset$MonYear),]
 
 
 ############################################# JUNK CODE
-hw2_test <-  gsub("-", ".", hw2_agg$MonYear)
-strReverse <- function(x)
-  sapply(lapply(strsplit(x, NULL), rev), paste, collapse="")
-test<- strReverse(hw2_agg$MonYear)
+#hw2_test <-  gsub("-", ".", hw2_agg$MonYear)
+#strReverse <- function(x)
+#  sapply(lapply(strsplit(x, NULL), rev), paste, collapse="")
+#test<- strReverse(hw2_agg$MonYear)
 ############################################# JUNK CODE 
 
 
@@ -223,7 +223,6 @@ lines(well_pass, col = "red", lwd = 2)
 HWES.welldepth <- hw(df, seasonal = "additive", h=6)
 summary(HWES.welldepth)
 
-<<<<<<< HEAD
 #Basic Plot
 plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (Ft)")
 abline(v = 2018, col = "red", lty = "dashed")
@@ -238,14 +237,12 @@ SES.welldepth <- ses(df, initial = "optimal", h = 6)
 summary(SES.welldepth)
 
 plot(SES.welldepth, main = "Well G_561_T water depth with Simple ESM Forecast", xlab = "Date", ylab = "Depth (Ft)")
-abline(v = 1992, col = "red", lty = "dashed")
+abline(v = 2018, col = "red", lty = "dashed")
 
 SES.test.results=forecast(SES.welldepth, h=6)
 error=testset$well-SES.test.results$mean
 SES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 240%
-=======
-plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (units)")
-abline(v = 2008.25, col = "red", lty = "dashed")
+
 
 #######################################################################
 
@@ -254,5 +251,8 @@ LES.WellDepth <- holt(df, initial = "optimal", h = 6)
 summary(LES.WellDepth)
 
 plot(LES.WellDepth, main = "Well Water Depth w/ Linear Exponential Smoothing", xlab = "Date", ylab = "Depth (Units)")
-abline(v = 2008.25, col = "red", lty = "dashed")
->>>>>>> 0dc9f2a09c721619f2ff6e8d51885aba31bcac80
+abline(v = 2018, col = "red", lty = "dashed")
+
+LES.test.results=forecast(LES.WellDepth, h=6)
+error=testset$well-LES.test.results$mean
+LES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 236%
