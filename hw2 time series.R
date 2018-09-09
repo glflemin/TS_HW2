@@ -191,8 +191,7 @@ trainset <- trainset[order(trainset$MonYear),]
 #to come later....
 #Creation of Time Series Data Object
 
-df <- ts(trainset$well, start = c(2007,10), frequency = 12)       ### start value is not correct
-
+df <- ts(trainset$well, start = c(2007,10), frequency = 12)     
 
 # Time Series Decomposition ...STL# #STL=Seasonal, Trend, Low S
 
@@ -256,3 +255,10 @@ abline(v = 2018, col = "red", lty = "dashed")
 LES.test.results=forecast(LES.WellDepth, h=6)
 error=testset$well-LES.test.results$mean
 LES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 236%
+
+##################################   Plot best model forecast with actual testset   ########################################################3
+predicted <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
+actual <- ts(testset$well, start=c(2018,1), frequency=12)
+
+plot(actual)
+lines(predicted, col="red")
