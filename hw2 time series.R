@@ -3,19 +3,15 @@
 #if you don't have any of these, install them
 
 install.packages("stringi")
+install.packages("ggfortify")
 
 library(readxl)
-
 library(lubridate)
-
 library(dplyr)
-
 library(zoo)
-
 library(stringi)
-
 library(tidyverse)
-
+library(ggfortify)
 library(forecast)
 library(fma)
 library(tseries)
@@ -36,16 +32,16 @@ rm(list=ls())
 
 #setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
-#setwd("C:\\Users\\Grant\Downloads\\")
+setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
-setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
+#setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
-#wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
+#wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
+wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
 G_561_T <- read_excel(wbpath, sheet=3) # need the full filepath to make this work
@@ -177,8 +173,7 @@ for (i in 1:123) {
 
 #hw2_agg2 <- cbind(hw2_agg, test2)
 trainset <- trainset[order(trainset$MonYear),]
-
-
+View(trainset)
 ############################################# JUNK CODE
 #hw2_test <-  gsub("-", ".", hw2_agg$MonYear)
 #strReverse <- function(x)
@@ -304,6 +299,16 @@ predictedHWES <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
 abline(v = seq(2008,2017), col = "gray", lty = "dashed")
 abline(v = 2018, col = "red", lty = "dashed")
 
+# Some example plotting code
+#autoplot(all_data, ts.geom = 'ribbon', ts.colour = 'purple', ts.linetype = 'dashed')
+#autoplot(all_data, ts.geom = 'point', shape = 3, ts.colour = 'red') # don't use this
+# Some example plotting code
+
+#requires the ggfortify package I added at the top
+#possible graph format. I can't get the vertical lines to show up, though. Let me know if we want to use this style instead of the default.
+auto <- autoplot(HWES.welldepth, ts.alpha = 0.5, predict.colour = 'red') + labs(title = "Linear/Holt ESM Forecast", x= "Year", y = 'Depth')
+auto + geom_vline(xintercept = 2014 + (07 - 1)/12) # why won't this show?!
+
 #Different Holt-Winters, with intervals
 plot(HWES.welldepth, main = "Well G-561-T Water Depth \nHolt-Winters ESM Forecast", 
      xlab = "Date", 
@@ -311,3 +316,6 @@ plot(HWES.welldepth, main = "Well G-561-T Water Depth \nHolt-Winters ESM Forecas
 abline(v = seq(2008,2017), col = "gray", lty = "dashed")
 abline(v = 2018, col = "red", lty = "dashed")
 lines(actual, col='red')
+
+
+HWES.welldepth
