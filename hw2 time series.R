@@ -280,6 +280,34 @@ HWES_Mult.welldepth <- hw(df+1, seasonal = "multiplicative", h=6)
 # needed be corrected by -1 and/or discarded entirely.
 
 
+# reverting some of the values back to original water levels
+# WARNING: PROBABLY NOT ALL NECESSARY VALUES WER REVERTED
+# I'm not sure I trust this model enough to use it.
+HWES_Mult.welldepth$mean <- HWES_Mult.welldepth$mean-1
+HWES_Mult.welldepth$x <- HWES_Mult.welldepth$x-1
+HWES_Mult.welldepth$upper <- HWES_Mult.welldepth$upper-1
+HWES_Mult.welldepth$lower <- HWES_Mult.welldepth$lower-1
+HWES_Mult.welldepth$fitted <- HWES_Mult.welldepth$fitted-1
+summary(HWES_Mult.welldepth) #summary looks decent
+
+# plotting
+plot(HWES_Mult.welldepth, 
+     main = "Well G_561_T water depth \n with Holt Winters Multiplicative Model", 
+     xlab = "Date", ylab = "Depth (Ft)")
+abline(v = 2018, col = "red", lty = "dashed")
+abline(v = seq(2008,2017), col = "gray", lty = "dashed")
+
+# adding actual and additive predictions for comparison
+actual <- ts(testset$well, start=c(2018,1), frequency=12)
+predictedHWES <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
+lines(actual, col="red")
+lines(predictedHWES, col='green') #prediction from additive HWES model
+
+HWES_Mult.test.results=forecast(HWES_Mult.welldepth, h=6)
+error=(testset$well)-(HWES_Mult.test.results$mean)
+HWES_Mult_MAPE=mean(abs(error)/abs(testset$well))   
+HWES_Mult_MAPE
+
 ##################################   Plot best model forecast with actual testset   ########################################################3
 predictedHWES <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
 predictedLES <- ts(LES.welldepth$mean, start=c(2018,1), frequency=12)
@@ -307,8 +335,8 @@ abline(v = 2018, col = "red", lty = "dashed")
 #requires the ggfortify package I added at the top
 #possible graph format. I can't get the vertical lines to show up, though. Let me know if we want to use this style instead of the default.
 auto <- autoplot(HWES.welldepth, ts.alpha = 0.5, predict.colour = 'red') + labs(title = "Linear/Holt ESM Forecast", x= "Year", y = 'Depth')
-auto + geom_vline(xintercept = 2014 + (07 - 1)/12) # why won't this show?!
-
+auto + geom_vline(xintercept = as.Date("2018-01-01"))
+auto
 #Different Holt-Winters, with intervals
 plot(HWES.welldepth, main = "Well G-561-T Water Depth \nHolt-Winters ESM Forecast", 
      xlab = "Date", 
