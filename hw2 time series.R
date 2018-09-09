@@ -197,7 +197,7 @@ df <- ts(trainset$well, start = c(2007,10), frequency = 12)
 
 decomp_stl <- stl(df, s.window = 7, na.action = na.approx) 
 
-
+class(df)
 #Well= time series object, 
 
 #Plot Decomposition
@@ -205,7 +205,7 @@ decomp_stl <- stl(df, s.window = 7, na.action = na.approx)
 plot(decomp_stl)
 plot.ts(df, xlab = "Year", ylab = "Depth (Ft)")
 plot(df, xlab = "Year", ylab = "Depth (Ft)")
-
+abline(v = seq(2008,2018), col = "red", lty = "dashed")
 
 #Plotting the Trend/Cycle over the actual Values of Well Depth
 plot(df, col = "grey", main = "Well Depth - Trend/Cycle", xlab = "Year", ylab = "Depth (Feet) ", lwd = 2)
@@ -226,12 +226,14 @@ summary(HWES.welldepth)
 plot(HWES.welldepth, main = "Well G_561_T water depth with Holt-Winters ESM Forecast", xlab = "Date", ylab = "Depth (Ft)")
 abline(v = 2018, col = "red", lty = "dashed")
 
+
 #Calulate MAPE
 HWES.test.results=forecast(HWES.welldepth, h=6)
 error=testset$well-HWES.test.results$mean
 HWES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy (MAPE) = 120%
+#######################################################################
 
-## Single ##
+## Single Exponential Smoothing ##
 SES.welldepth <- ses(df, initial = "optimal", h = 6)
 summary(SES.welldepth)
 
@@ -246,13 +248,13 @@ SES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 240%
 #######################################################################
 
 # Building a Linear/Holt Exponential Smoothing Model#
-LES.WellDepth <- holt(df, initial = "optimal", h = 6)
-summary(LES.WellDepth)
+LES.welldepth <- holt(df, initial = "optimal", h = 6)
+summary(LES.welldepth)
 
-plot(LES.WellDepth, main = "Well Water Depth w/ Linear Exponential Smoothing", xlab = "Date", ylab = "Depth (Units)")
+plot(LES.welldepth, main = "Well Water Depth w/ Linear Exponential Smoothing", xlab = "Date", ylab = "Depth (Units)")
 abline(v = 2018, col = "red", lty = "dashed")
 
-LES.test.results=forecast(LES.WellDepth, h=6)
+LES.test.results=forecast(LES.welldepth, h=6)
 error=testset$well-LES.test.results$mean
 LES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 236%
 
@@ -284,19 +286,28 @@ HWES_Mult.welldepth <- hw(df+1, seasonal = "multiplicative", h=6)
 
 
 ##################################   Plot best model forecast with actual testset   ########################################################3
-predicted <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
+predictedHWES <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
+predictedLES <- ts(LES.welldepth$mean, start=c(2018,1), frequency=12)
 actual <- ts(testset$well, start=c(2018,1), frequency=12)
 all_data <- ts(hw2_agg$well, start=c(2007, 10), frequency=12)
 
-plot(all_data)
-lines(predicted, col="red")
-
+#plotting the HWES Model Forcast with actual testset
+plot(all_data, main = 'Holt-Winters ESM Forecast')
+lines(predictedHWES, col="red")
+abline(v = seq(2008,2017), col = "gray", lty = "dashed")
+abline(v = 2018, col = "red", lty = "dashed")
 
 #plotting the LES Model Forcast with actual testset
-predictedLES <- ts(LES.WellDepth$mean, start=c(2018,1), frequency=12)
-actual <- ts(testset$well, start=c(2018,1), frequency=12)
-all_data <- ts(hw2_agg$well, start=c(2007, 10), frequency=12)
-
 plot(all_data, main = 'Linear/Holt ESM Forecast')
 lines(predictedLES, col="red")
+predictedHWES <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
+abline(v = seq(2008,2017), col = "gray", lty = "dashed")
+abline(v = 2018, col = "red", lty = "dashed")
 
+#Different Holt-Winters, with intervals
+plot(HWES.welldepth, main = "Well G-561-T Water Depth \nHolt-Winters ESM Forecast", 
+     xlab = "Date", 
+     ylab = "Depth (Ft)")
+abline(v = seq(2008,2017), col = "gray", lty = "dashed")
+abline(v = 2018, col = "red", lty = "dashed")
+lines(actual, col='red')
