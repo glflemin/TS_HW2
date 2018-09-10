@@ -32,16 +32,17 @@ rm(list=ls())
 
 #setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
-setwd("C:\\Users\\Grant\Downloads\\")
+#setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
 #setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
+wbpath <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\G_561_T.xlsx"
 #wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
+#wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
 G_561_T <- read_excel(wbpath, sheet=3) # need the full filepath to make this work
@@ -64,7 +65,6 @@ length(vdate[[1]])
 
 colnames(vdate) <- 'date_time' #renaming vector to match other merge datafram
 
-vdate
 
 # Rounding dates to their hour, Frankensteining date & hour together, then converting to POSIX
 
@@ -77,7 +77,7 @@ G_561_T$date_time <- paste(G_561_T$date," ", lubridate::hour(G_561_T$time),":00:
 G_561_T$date_time <- as.POSIXct(G_561_T$date_time, tz="EST")
 
 
-View(G_561_T)
+#View(G_561_T)
 
 
 #grouping water levels by taking average of each hour
@@ -90,7 +90,7 @@ clean_well <- G_561_T %>%
   
   select(date_time, mean_corr)
 
-View(clean_well)
+#View(clean_well)
 
 #calc avg stdev
 
@@ -108,7 +108,7 @@ rm(list=setdiff(ls(), "final_df"))
 
 str(final_df)
 
-View(final_df)
+#View(final_df)
 
 
 ##########################################################
@@ -120,14 +120,14 @@ hw2 <- cbind(final_df, month(final_df$date_time),
 
 colnames(hw2) <- c('datetime', 'well', 'month', 'year')
 
-View(hw2)
+#View(hw2)
 
 hw2$MonYear <- do.call(paste, c(hw2[c("year", "month")], sep = "-")) 
-View(hw2)
+#View(hw2)
 
 hw2_agg <-aggregate(well ~ MonYear, hw2, mean)
 
-View(hw2_agg)
+#View(hw2_agg)
 
 ############################################# GRANT CODE
 
@@ -173,7 +173,7 @@ for (i in 1:123) {
 
 #hw2_agg2 <- cbind(hw2_agg, test2)
 trainset <- trainset[order(trainset$MonYear),]
-View(trainset)
+#View(trainset)
 ############################################# JUNK CODE
 #hw2_test <-  gsub("-", ".", hw2_agg$MonYear)
 #strReverse <- function(x)
@@ -282,7 +282,7 @@ HWES_Mult.welldepth <- hw(df+1, seasonal = "multiplicative", h=6)
 
 # reverting some of the values back to original water levels
 # WARNING: PROBABLY NOT ALL NECESSARY VALUES WER REVERTED
-# I'm not sure I trust this model enough to use it.
+# I'm don't trust this model enough to use it.
 HWES_Mult.welldepth$mean <- HWES_Mult.welldepth$mean-1
 HWES_Mult.welldepth$x <- HWES_Mult.welldepth$x-1
 HWES_Mult.welldepth$upper <- HWES_Mult.welldepth$upper-1
@@ -346,4 +346,38 @@ abline(v = 2018, col = "red", lty = "dashed")
 lines(actual, col='red')
 
 
-HWES.welldepth
+####################################### SUMMARY TABLE
+
+#Collecting models into a list
+# Only lapply with a list worked. Other apply/vector combos didn't work 
+fmodels <- list(HWES_Mult.welldepth,
+                HWES.welldepth,
+                SES.welldepth,
+                LDES.welldepth,
+                LES.welldepth)
+
+# A summarizing function to organize and compare all our models
+f.summarize <- function(forecast.model){
+  errors <- accuracy(forecast.model)
+  label <- forecast.model$method
+  
+  #MAPE of test set
+  test.results=forecast(forecast.model, h=6)
+  t.error=testset$well-test.results$mean
+  forecast.MAPE=100*mean(abs(t.error)/abs(testset$well))
+  
+  #Can add more prediction calculations here
+
+  results <- cbind(errors, label, forecast.MAPE)
+  return(results)
+}
+
+#apply the summarizing funciton to each model, then reformat results into clean dataframe
+fmodels.summ <- lapply(fmodels, f.summarize)
+fmodels.final <- as.data.frame(do.call(rbind, fmodels.summ)) #do.call is a wierd function that I still don't fully understand
+
+#review of final forecast model summary and working directory prior to saving results
+View(fmodels.final)
+get_cwd()
+write.csv(fmodels.final, file="forecast_models.csv")
+
