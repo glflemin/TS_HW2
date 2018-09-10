@@ -308,7 +308,7 @@ error=(testset$well)-(HWES_Mult.test.results$mean)
 HWES_Mult_MAPE=mean(abs(error)/abs(testset$well))   
 HWES_Mult_MAPE
 
-##################################   Plot best model forecast with actual testset   ########################################################3
+##################################   Plot best model forecast with actual testset   ########################################################
 predictedHWES <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
 predictedLES <- ts(LES.welldepth$mean, start=c(2018,1), frequency=12)
 actual <- ts(testset$well, start=c(2018,1), frequency=12)
