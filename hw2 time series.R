@@ -32,16 +32,16 @@ rm(list=ls())
 
 #setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
-setwd("C:\\Users\\Grant\Downloads\\")
+#setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
-#setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
+setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-#wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
+wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
+#wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
 G_561_T <- read_excel(wbpath, sheet=3) # need the full filepath to make this work
@@ -153,6 +153,8 @@ testset <- rbind(testset, r4)
 testset <- rbind(testset, r5)
 testset <- rbind(testset, r6)
 
+testset <- testset[order(testset$MonYear),]
+
 trainset <- hw2_agg[-c(124:129), ]
 
 testset # this our test (holdout) set
@@ -237,7 +239,7 @@ abline(v = 2018, col = "red", lty = "dashed")
 
 SES.test.results=forecast(SES.welldepth, h=6)
 error=testset$well-SES.test.results$mean
-SES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 240%
+SES_MAPE=mean(abs(error)/abs(testset$well))   ##Model Accuracy = 237%
 
 
 #######################################################################
