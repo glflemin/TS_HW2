@@ -31,18 +31,18 @@ rm(list=ls())
 
 
 #setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
-#setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
-setwd("C:\\Users\\Grant\Downloads\\")
+setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2\\Plots\\")
+#setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
 #setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
-#wbpath <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\G_561_T.xlsx"
+wbpath <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\G_561_T.xlsx"
 #wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
+#wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
 G_561_T <- read_excel(wbpath, sheet=3) # need the full filepath to make this work
@@ -322,8 +322,8 @@ HWES_Mult_MAPE
 ##################################   Plot best model forecast with actual testset   ########################################################
 predictedHWES <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
 predictedLES <- ts(LES.welldepth$mean, start=c(2018,1), frequency=12)
-actual <- ts(testset$well, start=c(2018,1), frequency=12)
-all_data <- ts(hw2_agg$well, start=c(2007, 10), frequency=12)
+actual <<- ts(testset$well, start=c(2018,1), frequency=12)
+all_data <<- ts(hw2_agg$well, start=c(2007, 10), frequency=12) #declared as global variable for use in plotting functions later
 
 #plotting the HWES Model Forcast with actual testset
 plot(all_data, main = 'Holt-Winters ESM Forecast')
@@ -375,7 +375,7 @@ fmodels <- list(HWES_Mult.welldepth,
 # A summarizing function to organize and compare all our models
 f.summarize <- function(forecast.model){
   errors <- accuracy(forecast.model)
-  label <- forecast.model$method
+  mlabel <- forecast.model$method
   
   #MAPE of test set
   test.results=forecast(forecast.model, h=6)
@@ -383,17 +383,51 @@ f.summarize <- function(forecast.model){
   forecast.MAPE=100*mean(abs(t.error)/abs(testset$well))
   
   #Can add more prediction calculations here
-
-  results <- cbind(errors, label, forecast.MAPE)
+  
+  f.plot(forecast.model, mlabel)
+  
+  results <- cbind(errors, mlabel, forecast.MAPE)
   return(results)
+}
+
+f.plot <- function(forecast.model, mlabel){
+  #standardized plots
+  #all_data declared as global variable above for use in these functions
+  
+  #Plot of all available data and model
+  png(paste(mlabel,'.png'), width=500, height=400)
+  plot(all_data,
+       main = paste("G-561 Water Elev\n(",mlabel,")"), ylab='Elev (Ft)', xlab='Date',
+       xlim=c(2007.5,2018.5))
+  lines(forecast.model$mean, col="blue", lwd=2)
+  grid(col = "gray80", lty = "dotted", lwd = par("lwd"), equilogs = TRUE) # added gridlines
+  abline(v = 2018, col = "red", lty = "dashed")
+  dev.off()
+  
+  #Plot of ONLY 2018 with predicted and actual results
+  png(paste('2018',mlabel,'.png'), width=500, height=400)
+  plot(actual,
+       main = paste("G-561 Water Elev\n(",mlabel,")"), ylab='Elev (Ft)', xlab='Date',
+       xlim=c(2018,2018.6)
+       )
+  lines(forecast.model$mean, col="blue", lwd=2)
+  grid(col = "gray80", lty = "dotted", lwd = par("lwd"), equilogs = TRUE) # added gridlines
+  abline(v = 2018, col = "red", lty = "dashed")
+  legend("bottomright", cex=0.8, legend=c("Prediction", "Observed", "Training Boundary"), 
+         col=c("blue","black", "red"), lwd = c(2, 1, 1), lty = c(1, 1, 2))
+  dev.off()
+  
 }
 
 #apply the summarizing funciton to each model, then reformat results into clean dataframe
 fmodels.summ <- lapply(fmodels, f.summarize)
 fmodels.final <- as.data.frame(do.call(rbind, fmodels.summ)) #do.call is a wierd function that I still don't fully understand
+dates <- as.Date(c("01/01/18", "06/01/18"), "%m/%d/%y")
+dates
 
 #review of final forecast model summary and working directory prior to saving results
 View(fmodels.final)
-get_cwd()
+getwd()
+
 write.csv(fmodels.final, file="forecast_models.csv")
 
