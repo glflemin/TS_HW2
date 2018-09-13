@@ -2,14 +2,14 @@
 
 #if you don't have any of these, install them
 
-install.packages("stringi")
+install.packages("stringr")
 install.packages("ggfortify")
 
 library(readxl)
 library(lubridate)
 library(dplyr)
 library(zoo)
-library(stringi)
+library(stringr)
 library(tidyverse)
 library(ggfortify)
 library(forecast)
@@ -39,13 +39,9 @@ setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homewor
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\G_561_T.xlsx"
+#wbpath <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\G_561_T.xlsx"
 #wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-<<<<<<< HEAD
 wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
-=======
-#wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
->>>>>>> 0ccd21da4e209982b7b210b135a22a3a935f52bd
 #wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
@@ -321,7 +317,7 @@ actual <- ts(testset$well, start=c(2018,1), frequency=12)
 all_data <- ts(hw2_agg$well, start=c(2007, 10), frequency=12)
 
 #plotting the HWES Model Forcast with actual testset
-plot(all_data, main = 'Holt-Winters ESM Forecast')
+plot(all_data, main = 'Holt-Winters ESM Forecast', ylab = "Depth (Ft)")
 lines(predictedHWES, col="red")
 abline(v = seq(2008,2017), col = "gray", lty = "dashed")
 abline(v = 2018, col = "red", lty = "dashed")
