@@ -21,7 +21,6 @@ library(tidyverse)
 #setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # Import final output Homework #2 .Rdata file from HW2 reposity
-# TODO Need to clean and finalize this .RData file
 path = "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2\\HW2-Repo\\TS_HW2\\HW2.RData"
 
 load(path)

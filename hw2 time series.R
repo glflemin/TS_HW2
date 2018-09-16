@@ -1,10 +1,6 @@
 #Library to manipulate dates and excel and dataframes
 
 #if you don't have any of these, install them
-
-install.packages("stringr")
-install.packages("ggfortify")
-
 library(readxl)
 library(lubridate)
 library(dplyr)
@@ -30,8 +26,8 @@ rm(list=ls())
 
 
 
-setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
-#setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\Homework-1\\")
+#setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
+setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2")
 #setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
 #setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
@@ -39,18 +35,9 @@ setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
-#wbpath <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\G_561_T.xlsx"
-<<<<<<< HEAD
+wbpath <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\G_561_T.xlsx"
 #wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
-=======
-wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-#<<<<<<< HEAD
 #wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
-#=======
-#wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
-#>>>>>>> 0ccd21da4e209982b7b210b135a22a3a935f52bd
->>>>>>> 5a43da174671bf0ada44a83aea015d20c3b2c4c3
 #wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
@@ -184,14 +171,6 @@ for (i in 1:123) {
 
 #hw2_agg2 <- cbind(hw2_agg, test2)
 trainset <- trainset[order(trainset$MonYear),]
-#View(trainset)
-############################################# JUNK CODE
-#hw2_test <-  gsub("-", ".", hw2_agg$MonYear)
-#strReverse <- function(x)
-#  sapply(lapply(strsplit(x, NULL), rev), paste, collapse="")
-#test<- strReverse(hw2_agg$MonYear)
-############################################# JUNK CODE 
-
 
 ################################################################### END OF GRANT CODE 
 #to come later....
@@ -322,8 +301,8 @@ HWES_Mult_MAPE
 ##################################   Plot best model forecast with actual testset   ########################################################
 predictedHWES <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
 predictedLES <- ts(LES.welldepth$mean, start=c(2018,1), frequency=12)
-actual <- ts(testset$well, start=c(2018,1), frequency=12)
-all_data <- ts(hw2_agg$well, start=c(2007, 10), frequency=12)
+actual <<- ts(testset$well, start=c(2018,1), frequency=12)
+all_data <<- ts(hw2_agg$well, start=c(2007, 10), frequency=12) #declared as global variable for use in plotting functions later
 
 #plotting the HWES Model Forcast with actual testset
 plot(all_data, main = 'Holt-Winters ESM Forecast', ylab = "Depth (Ft)")
@@ -367,28 +346,67 @@ fmodels <- list(HWES_Mult.welldepth,
                 LDES.welldepth,
                 LES.welldepth)
 
-# A summarizing function to organize and compare all our models
+
 f.summarize <- function(forecast.model){
+  # A summarizing function to organize and compare all our models
+  
   errors <- accuracy(forecast.model)
-  label <- forecast.model$method
+  mlabel <- forecast.model$method
   
   #MAPE of test set
   test.results=forecast(forecast.model, h=6)
   t.error=testset$well-test.results$mean
   forecast.MAPE=100*mean(abs(t.error)/abs(testset$well))
   
-  #Can add more prediction calculations here
-
-  results <- cbind(errors, label, forecast.MAPE)
+  #Calling our personal plot function
+  f.plot(forecast.model, mlabel)
+  
+  results <- cbind(errors, mlabel, forecast.MAPE)
   return(results)
 }
 
+f.plot <- function(forecast.model, mlabel){
+  #standardized plots
+  #all_data declared as global variable above for use in these functions
+  
+  #Plot of all available data and model
+  png(paste(mlabel,'.png'), width=500, height=400)
+  plot(all_data,
+       main = paste("G-561 Water Elev\n(",mlabel,")"), ylab='Elev (Ft)', xlab='Date',
+       xlim=c(2007.5,2018.5))
+  lines(forecast.model$mean, col="blue", lwd=2)
+  grid(col = "gray80", lty = "dotted", lwd = par("lwd"), equilogs = TRUE) # added gridlines
+  abline(v = 2018, col = "red", lty = "dashed")
+  dev.off()
+  
+  #Plot of ONLY 2018 with predicted and actual results
+  png(paste('2018',mlabel,'.png'), width=500, height=400)
+  plot(actual,
+       main = paste("G-561 Water Elev\n(",mlabel,")"), ylab='Elev (Ft)', xlab='Date',
+       xlim=c(2018,2018.6)
+  )
+  lines(forecast.model$mean, col="blue", lwd=2)
+  grid(col = "gray80", lty = "dotted", lwd = par("lwd"), equilogs = TRUE) # added gridlines
+  abline(v = 2018, col = "red", lty = "dashed")
+  legend("bottomright", cex=0.8, legend=c("Prediction", "Observed", "Training Boundary"), 
+         col=c("blue","black", "red"), lwd = c(2, 1, 1), lty = c(1, 1, 2))
+  dev.off()
+  
+}
+
+#COMMENTED OUT LINES BELOW TO AVOID RECREATING PLOTS OVER AND OVER
 #apply the summarizing funciton to each model, then reformat results into clean dataframe
-fmodels.summ <- lapply(fmodels, f.summarize)
-fmodels.final <- as.data.frame(do.call(rbind, fmodels.summ)) #do.call is a wierd function that I still don't fully understand
+#fmodels.summ <- lapply(fmodels, f.summarize)
+#fmodels.final <- as.data.frame(do.call(rbind, fmodels.summ)) #do.call is a wierd function that I still don't fully understand
 
 #review of final forecast model summary and working directory prior to saving results
-View(fmodels.final)
-get_cwd()
-write.csv(fmodels.final, file="forecast_models.csv")
+#View(fmodels.final)
+#getwd()
+#write.csv(fmodels.final, file="forecast_models.csv")
 
+
+#cleaning up environment
+rm(list=setdiff(ls(),c("HWES.welldepth", "all_data", "actual", "df", "f.plot", "f.summarize")))
+
+# if there's another vairable/df/model we want ot pass along to the next HW, just include it in the save() function below
+save(HWES.welldepth, all_data, actual, df, f.plot, f.summarize, file="HW2.RData")
