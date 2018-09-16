@@ -12,6 +12,8 @@ library(expsmooth)
 library(lmtest)
 library(zoo)
 library(seasonal)
+library(tseries)
+library(dyn)
 library(tidyverse)
 
 
@@ -29,6 +31,7 @@ path <- "C:\\Users\\Grant\\Documents\\MSA\\Fall\\Time Series\\HW2.RData"
 
 load(path)
 
+well_ts
 
 ############################################
 ########  ADDRESS SEASONALITY ##############
@@ -38,7 +41,7 @@ load(path)
 # Automated Seasonal Differencing Test Function to find best differences #
 nsdiffs(well_ts)
 ndiffs(diff(well_ts, lag = 12))
-
+?ndiffs
 # IF DETERMINISTIC SEASONALITY
 # Fit with dummy variables, need a season variable
 lm(well_ts ~ season_variable)
@@ -77,9 +80,9 @@ lm(well_ts ~ time_variable)
 ########  FINAL STATIONARY SERIES  #########
 ############################################
 
-
 # PLOT STATIONARY TIME SERIES
-
+# appears stationary around y = 1.0
+plot(well_ts, xlab='Time',ylab='Change in Height (Ft)',main='Stationary Well Time Series Graph')
 
 # CLEAN ENVIRONMENT
 #rm(list=ls(-ts.final))
