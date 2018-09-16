@@ -406,13 +406,17 @@ f.plot <- function(forecast.model, mlabel){
 #write.csv(fmodels.final, file="forecast_models.csv")
 
 
+################################ CLEAN UP ############################ S. Powell
+
 #cleaning up environment
 ts_train <- df
 ts_val <- actual
 well_ts <- all_data
-rm(list=setdiff(ls(),c("HWES.welldepth", "well_ts", "ts_val", "ts_train", "f.plot", "f.summarize")))
+well_df <- aggregate(well~ MonYear + month + year, hw2, mean)
 
+#this isn't even necessary since only variables in the save() funciton will be passed to .RDdata file
+rm(list=setdiff(ls(),c("HWES.welldepth", "well_ts", "well_df", "ts_val", "ts_train", "f.plot", "f.summarize")))
 
-# if there's another vairable/df/model we want ot pass along to the next HW, just include it in the save() function below
+# if there's another vairable/df/model/function we want ot pass along to the next HW, just include it in the save() function below
 setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2\\HW2-Repo\\TS_HW2\\")
-save(HWES.welldepth, well_ts, ts_val, ts_train, f.plot, f.summarize, file="HW2.RData")
+save(HWES.welldepth, well_ts, well_df, ts_val, ts_train, f.plot, f.summarize, file="HW2.RData")
