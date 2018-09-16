@@ -394,19 +394,25 @@ f.plot <- function(forecast.model, mlabel){
   
 }
 
-#COMMENTED OUT LINES BELOW TO AVOID RECREATING PLOTS OVER AND OVER
+#COMMENTED OUT LINES BELOW TO AVOID RECREATING CSV OVER AND OVER
 #apply the summarizing funciton to each model, then reformat results into clean dataframe
 #fmodels.summ <- lapply(fmodels, f.summarize)
 #fmodels.final <- as.data.frame(do.call(rbind, fmodels.summ)) #do.call is a wierd function that I still don't fully understand
 
 #review of final forecast model summary and working directory prior to saving results
+#COMMENTED OUT LINES BELOW TO AVOID RECREATING CSV OVER AND OVER
 #View(fmodels.final)
 #getwd()
 #write.csv(fmodels.final, file="forecast_models.csv")
 
 
 #cleaning up environment
-rm(list=setdiff(ls(),c("HWES.welldepth", "all_data", "actual", "df", "f.plot", "f.summarize")))
+ts_train <- df
+ts_val <- actual
+well_ts <- all_data
+rm(list=setdiff(ls(),c("HWES.welldepth", "well_ts", "ts_val", "ts_train", "f.plot", "f.summarize")))
+
 
 # if there's another vairable/df/model we want ot pass along to the next HW, just include it in the save() function below
-save(HWES.welldepth, all_data, actual, df, f.plot, f.summarize, file="HW2.RData")
+setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2\\HW2-Repo\\TS_HW2\\")
+save(HWES.welldepth, well_ts, ts_val, ts_train, f.plot, f.summarize, file="HW2.RData")
