@@ -63,9 +63,10 @@ season <- season[-(130:132),]
 
 season2 <- data.frame(cbind(season, well_ts))
 
-season3 <- lm(well_ts ~ season2[,1:11])
+season3 <- lm(well_ts ~ season)
 summary(season3)
-
+well_noseason <- season3$residuals
+wns <- ts(well_noseason, start=c(2007,10), frequency=12)
 
 ############################################
 ########  IDENTIFY/ADDRESS TREND  ##########
@@ -78,7 +79,7 @@ summary(season3)
 # check Tau with other lags (0-2), though Simmons said industry never checks more than "lag2" 
 ADF.Pvalues <- rep(NA, 3)
 for(i in 0:2){
-  ADF.Pvalues[i+1] <- adf.test(well_ts, alternative = "stationary", k = i)$p.value
+  ADF.Pvalues[i+1] <- adf.test(wns, alternative = "stationary", k = i)$p.value
 }
 ADF.Pvalues
 
@@ -94,6 +95,7 @@ z <- ts(diff(well_ts), start=C(2007,10), frequency = 12)  ## Test for plotting
 # IF DETERMINISTIC TREND (all rho/tau p-values < alpha)
 # Simmons had no example code on this. Not sure of the simplest way to take errors from trend.
 lm(well_ts ~ time_variable)
+season3$coefficients
 
 ############################################
 ########  FINAL STATIONARY SERIES  #########
@@ -101,7 +103,10 @@ lm(well_ts ~ time_variable)
 
 # PLOT STATIONARY TIME SERIES
 # appears stationary around y = 1.0
-plot(well_ts, xlab='Time',ylab='Change in Height (Ft)',main='Stationary Well Time Series Graph')
+dataframe <- data.frame(cbind(well_ts, wns))
+ggplot(dataframe, aes(x=1:length(well_ts))) +geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=wns), color='blue')
+       
+lines(wns, xlab='Time',ylab='Change in Height (Ft)',main='Stationary Well Time Series Graph', col='blue')
 plot(diff(well_ts), xlab='Time',ylab='Change in Height (Ft)',main='First Difference Well Time Series Graph')   ## test   
 # CLEAN ENVIRONMENT
 #rm(list=ls(-ts.final))
