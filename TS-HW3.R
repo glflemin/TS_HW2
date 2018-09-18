@@ -44,13 +44,27 @@ nsdiffs(well_ts)    ## Result of 0 indicates no differencing required at seasona
 
 #ndiffs(diff(well_ts, lag = 12))  ## Alternate method to test seasonal stationarity
 #?ndiffs
-# IF DETERMINISTIC SEASONALITY
-# Fit with dummy variables, need a season variable
-lm(well_ts ~ season_variable)
 
-# IF STOCHASTIC SEASONALITY
-# Take Differences (differences should be length of season)
-diff(well_ts, lag = 12)
+# Since no differencing --> dummy variables to remove any seasonality (deterministic)
+# Fit with dummy variables, need a season variable
+season=matrix(rep(c(0,0,0,0,0,0,0,0,0,1,0,
+                    0,0,0,0,0,0,0,0,0,0,1,
+                    0,0,0,0,0,0,0,0,0,0,0,
+                    1,0,0,0,0,0,0,0,0,0,0,
+                    0,1,0,0,0,0,0,0,0,0,0,
+                    0,0,1,0,0,0,0,0,0,0,0,
+                    0,0,0,1,0,0,0,0,0,0,0,
+                    0,0,0,0,1,0,0,0,0,0,0,
+                    0,0,0,0,0,1,0,0,0,0,0,
+                    0,0,0,0,0,0,1,0,0,0,0,
+                    0,0,0,0,0,0,0,1,0,0,0,
+                    0,0,0,0,0,0,0,0,1,0,0),11),byrow=T,nrow=132)
+season <- season[-(130:132),]
+
+season2 <- data.frame(cbind(season, well_ts))
+
+season3 <- lm(well_ts ~ season2[,1:11])
+summary(season3)
 
 
 ############################################
