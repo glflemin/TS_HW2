@@ -117,12 +117,11 @@ ndiffs(well_ts, test="pp")      ## Result of 0
 # IF FIT STOCHASTIC TREND 
 # Take differences
 ndiffs(diff(well_ts))
-z <- ts(diff(well_ts), start=C(2007,10), frequency = 12)  ## Test for plotting
 
 # IF DETERMINISTIC TREND (all rho/tau p-values < alpha)
 t <- rep(1:129)
 pot_trend <- lm(well_ts ~ t)
-summary(pot_trend)               ## Coefficient of t is significant but small (0.0038) -> essentially zero, conclude no trend
+summary(pot_trend)               ## Coefficient of t is significant but very small (0.0038) -> essentially zero, conclude no trend
 
 ############################################
 ########  FINAL STATIONARY SERIES  #########
@@ -133,7 +132,6 @@ summary(pot_trend)               ## Coefficient of t is significant but small (0
 dataframe <- data.frame(cbind(well_ts, wns))
 ggplot(dataframe, aes(x=1:length(well_ts))) +geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=wns), color='blue')
        
-lines(wns, xlab='Time',ylab='Change in Height (Ft)',main='Stationary Well Time Series Graph', col='blue')
-plot(diff(well_ts), xlab='Time',ylab='Change in Height (Ft)',main='First Difference Well Time Series Graph')   ## test   
+
 # CLEAN ENVIRONMENT
 #rm(list=ls(-ts.final))
