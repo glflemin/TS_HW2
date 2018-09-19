@@ -37,6 +37,33 @@ well_ts
 ########  ADDRESS SEASONALITY ##############
 ############################################
 
+
+well <- well_ts[-(1:3)]
+y08 <- well[1:12]
+y09 <- well[13:24]
+y10 <- well[25:36]
+y11 <- well[37:48]
+y12 <- well[49:60]
+y13 <- well[61:72]
+y14 <- well[73:84]
+y15 <- well[85:96]
+y16 <- well[97:108]
+y17 <- well[109:120]
+
+dataframe <- data.frame(cbind(y08,y09,y10,y11,y12,y13,y14,y15,y16,y17))
+
+ggplot(dataframe, aes(x=1:length(y08)))+
+  geom_line(aes(y=y08))+
+  geom_line(aes(y=y09))+
+  geom_line(aes(y=y10))+
+  geom_line(aes(y=y11))+
+  geom_line(aes(y=y12))+
+  geom_line(aes(y=y13))+
+  geom_line(aes(y=y14))+
+  geom_line(aes(y=y15))+
+  geom_line(aes(y=y16))+
+  geom_line(aes(y=y17))
+
 # SEASONAL ADF TESTING
 # Automated Seasonal Differencing Test Function to find best differences #
   ## comments by B.Jenista
@@ -93,9 +120,9 @@ ndiffs(diff(well_ts))
 z <- ts(diff(well_ts), start=C(2007,10), frequency = 12)  ## Test for plotting
 
 # IF DETERMINISTIC TREND (all rho/tau p-values < alpha)
-# Simmons had no example code on this. Not sure of the simplest way to take errors from trend.
-lm(well_ts ~ time_variable)
-season3$coefficients
+t <- rep(1:129)
+pot_trend <- lm(well_ts ~ t)
+summary(pot_trend)               ## Coefficient of t is significant but small (0.0038) -> essentially zero, conclude no trend
 
 ############################################
 ########  FINAL STATIONARY SERIES  #########
