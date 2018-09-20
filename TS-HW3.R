@@ -6,12 +6,6 @@
 rm(list=ls())
 
 library(forecast)
-library(haven)
-library(fma)
-library(expsmooth)
-library(lmtest)
-library(zoo)
-library(seasonal)
 library(tseries)
 library(dyn)         ## Allows time series objects to interface with various regression functions
 library(tidyverse)
