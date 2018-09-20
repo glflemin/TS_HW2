@@ -6,13 +6,13 @@ library(lubridate)
 library(dplyr)
 library(zoo)
 library(stringr)
-library(tidyverse)
 library(ggfortify)
 library(forecast)
 library(fma)
 library(tseries)
 library(expsmooth)
 library(lmtest)
+library(tidyverse)
 
 # for cleaning global environment
 
@@ -27,17 +27,17 @@ rm(list=ls())
 
 
 #setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
-setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2")
+#setwd("C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2")
 #setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ('C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\')
-#setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
+setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # importing the Excel file
 
 #wbpath <- "C:\\Users\\molly\\OneDrive\\Documents\\R\\data\\G-561_T.xlsx"
-wbpath <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\G_561_T.xlsx"
+#wbpath <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW1\\G_561_T.xlsx"
 #wbpath <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\G-561_T.xlsx"
-#wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
+wbpath <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\G-561_T.xlsx"
 #wbpath <- "C:\\Users\\Grant\\Downloads\\G_561_T.xlsx"
 
 
@@ -302,7 +302,7 @@ HWES_Mult_MAPE
 predictedHWES <- ts(HWES.welldepth$mean, start=c(2018,1), frequency=12)
 predictedLES <- ts(LES.welldepth$mean, start=c(2018,1), frequency=12)
 actual <<- ts(testset$well, start=c(2018,1), frequency=12)
-all_data <<- ts(hw2_agg$well, start=c(2007, 10), frequency=12) #declared as global variable for use in plotting functions later
+all_data <<- ts((rbind(trainset, testset))$well, start=c(2007, 10), frequency=12) #declared as global variable for use in plotting functions later
 
 #plotting the HWES Model Forcast with actual testset
 plot(all_data, main = 'Holt-Winters ESM Forecast', ylab = "Depth (Ft)")
