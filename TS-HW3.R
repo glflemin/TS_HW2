@@ -19,19 +19,19 @@ library(tidyverse)
 
 #setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
 #setwd("C:\\Users\\Grant\Downloads\\")
-setwd ("C:\\Users\\molly\\OneDrive\\Documents\\GitHub\\TS_HW2")
-#setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
+#setwd ("C:\\Users\\molly\\OneDrive\\Documents\\GitHub\\TS_HW2")
+setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # Import final output Homework #2 .Rdata file from HW2 reposity
 #path <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2\\HW2-Repo\\TS_HW2\\HW2.RData"
 #path <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\HW2.RData"
-#path <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\HW2.RData"
+path <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\HW2.RData"
 #path <- "C:\\Users\\Grant\\Documents\\MSA\\Fall\\Time Series\\HW2.RData"
-path <- "C:\\Users\\molly\\OneDrive\\Documents\\GitHub\\TS_HW2\\HW2.RData"
+#path <- "C:\\Users\\molly\\OneDrive\\Documents\\GitHub\\TS_HW2\\HW2.RData"
 
 load(path)
 
-well_ts
+well_ts <- ts(well_df$well, start=c(2007, 10), frequency=12)
 
 ############################################
 ########  ADDRESS SEASONALITY ##############
@@ -91,8 +91,9 @@ season <- season[-(130:132),]
 season2 <- data.frame(cbind(season, well_ts))
 
 season3 <- lm(well_ts ~ season)
-summary(season3)
-well_noseason <- season3$residuals
+summary(season3)                     ## R-squared = 0.441
+well_noseason <- season3$residuals     
+fitted <- ts(season3$fitted.values, start=c(2007,10), frequency = 12)
 wns <- ts(well_noseason, start=c(2007,10), frequency=12)
 
 ############################################
@@ -106,32 +107,44 @@ wns <- ts(well_noseason, start=c(2007,10), frequency=12)
 # check Tau with other lags (0-2), though Simmons said industry never checks more than "lag2" 
 ADF.Pvalues <- rep(NA, 3)
 for(i in 0:2){
-  ADF.Pvalues[i+1] <- adf.test(wns, alternative = "stationary", k = i)$p.value
+  ADF.Pvalues[i+1] <- adf.test(well_ts, alternative = "stationary", k = i)$p.value
 }
 ADF.Pvalues
 
 ndiffs(well_ts, test="adf")     ## Result of 0
-ndiffs(well_ts, test="kpss")    ## Result of 1 indicates 1 difference required for stationarity
+ndiffs(well_ts, test="kpss")    ## Result of 0
 ndiffs(well_ts, test="pp")      ## Result of 0
 
-# IF FIT STOCHASTIC TREND 
-# Take differences
-ndiffs(diff(well_ts))
+ndiffs(wns, test="adf")     ## Result of 0
+ndiffs(wns, test="kpss")    ## Result of 1 indicates 1 difference required for stationarity
+ndiffs(wns, test="pp")      ## Result of 0
+
 
 # IF DETERMINISTIC TREND (all rho/tau p-values < alpha)
 t <- rep(1:129)
-pot_trend <- lm(well_ts ~ t)
-summary(pot_trend)               ## Coefficient of t is significant but very small (0.0038) -> essentially zero, conclude no trend
+pot_trend1 <- lm(well_ts ~ t)
+summary(pot_trend1)               ## Coefficient of t is significant but very small (0.0043) -> essentially zero, conclude no trend
+
+pot_trend2 <- lm(wns ~ t)
+summary(pot_trend2)               ## Coefficient of t is significant but very small (0.0046) -> essentially zero, conclude no trend
 
 ############################################
 ########  FINAL STATIONARY SERIES  #########
 ############################################
 
+stat1 <- pot_trend1$residuals
+stat2 <- pot_trend2$residuals
+
 # PLOT STATIONARY TIME SERIES
 # appears stationary around y = 1.0
-dataframe <- data.frame(cbind(well_ts, wns))
-ggplot(dataframe, aes(x=1:length(well_ts))) +geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=wns), color='blue')
-       
+dataframe <- data.frame(cbind(well_ts, wns, fitted, stat1, stat2))
+ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=fitted), color='blue') 
+
+ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') +geom_line(aes(y=wns), color='green')
+ 
+ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=stat1), color='black') 
+
+ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=stat2), color='purple')
 
 # CLEAN ENVIRONMENT
 #rm(list=ls(-ts.final))
