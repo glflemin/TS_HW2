@@ -12,15 +12,15 @@ library(tidyverse)
 
 
 #setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
-#setwd("C:\\Users\\Grant\Downloads\\")
+setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ("C:\\Users\\molly\\OneDrive\\Documents\\GitHub\\TS_HW2")
-setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
+#setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # Import final output Homework #2 .Rdata file from HW2 reposity
 #path <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2\\HW2-Repo\\TS_HW2\\HW2.RData"
 #path <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\HW2.RData"
-path <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\HW2.RData"
-#path <- "C:\\Users\\Grant\\Documents\\MSA\\Fall\\Time Series\\HW2.RData"
+#path <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\HW2.RData"
+path <- "C:\\Users\\Grant\\Documents\\MSA\\Fall\\Time Series\\HW2.RData"
 #path <- "C:\\Users\\molly\\OneDrive\\Documents\\GitHub\\TS_HW2\\HW2.RData"
 
 load(path)
@@ -45,8 +45,8 @@ y16 <- well[97:108]
 y17 <- well[109:120]
 
 dataframe <- data.frame(cbind(y08,y09,y10,y11,y12,y13,y14,y15,y16,y17))
-
-ggplot(dataframe, aes(x=1:length(y08)))+
+well_ts
+many_plot <- ggplot(dataframe, aes(x=1:length(y08)))+
   geom_line(aes(y=y08))+
   geom_line(aes(y=y09))+
   geom_line(aes(y=y10))+
@@ -56,7 +56,10 @@ ggplot(dataframe, aes(x=1:length(y08)))+
   geom_line(aes(y=y14))+
   geom_line(aes(y=y15))+
   geom_line(aes(y=y16))+
-  geom_line(aes(y=y17))
+  geom_line(aes(y=y17))+
+  scale_x_continuous(breaks=seq(1, 12, 1))+
+  labs(title="Change in Well Depth Between 2007 and 2017", x="Month of Year", y="Change in Well Depth (Ft)")
+many_plot
 
 # SEASONAL ADF TESTING
 # Automated Seasonal Differencing Test Function to find best differences #
@@ -131,14 +134,14 @@ stat2 <- pot_trend2$residuals
 
 # PLOT STATIONARY TIME SERIES
 # appears stationary around y = 1.0
-dataframe <- data.frame(cbind(well_ts, wns, fitted, stat1, stat2))
-ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=fitted), color='blue') 
+dataframe2 <- data.frame(cbind(well_ts, wns, fitted, stat1, stat2))
+ggplot(dataframe2, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=fitted), color='blue') 
 
-ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') +geom_line(aes(y=wns), color='green')
+ggplot(dataframe2, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') +geom_line(aes(y=wns), color='green')
  
-ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=stat1), color='black') 
+ggplot(dataframe2, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=stat1), color='black') 
 
-ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=stat2), color='purple')
+ggplot(dataframe2, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=stat2), color='purple')
 
 # CLEAN ENVIRONMENT
 #rm(list=ls(-ts.final))
