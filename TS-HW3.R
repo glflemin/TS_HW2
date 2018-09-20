@@ -12,15 +12,15 @@ library(tidyverse)
 
 
 #setwd('C:\\Users\\gavin\\Desktop\\Time_Series_Data\\')
-setwd("C:\\Users\\Grant\Downloads\\")
+#setwd("C:\\Users\\Grant\Downloads\\")
 #setwd ("C:\\Users\\molly\\OneDrive\\Documents\\GitHub\\TS_HW2")
-#setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
+setwd("C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework")
 
 # Import final output Homework #2 .Rdata file from HW2 reposity
 #path <- "C:\\Users\\Steven\\Documents\\MSA\\Analytics Foundations\\lab and hw\\Time Series\\HW2\\HW2-Repo\\TS_HW2\\HW2.RData"
 #path <- "C:\\Users\\gavin\\Desktop\\Time_Series_Data\\HW2.RData"
-#path <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\HW2.RData"
-path <- "C:\\Users\\Grant\\Documents\\MSA\\Fall\\Time Series\\HW2.RData"
+path <- "C:\\Users\\Bill\\Documents\\NCSU\\Course Work\\Fall\\Time Series\\Homework\\HW2.RData"
+#path <- "C:\\Users\\Grant\\Documents\\MSA\\Fall\\Time Series\\HW2.RData"
 #path <- "C:\\Users\\molly\\OneDrive\\Documents\\GitHub\\TS_HW2\\HW2.RData"
 
 load(path)
@@ -132,26 +132,33 @@ summary(pot_trend2)               ## Coefficient of t is significant but very sm
 stat1 <- pot_trend1$residuals
 stat2 <- pot_trend2$residuals
 
+dates <- data.frame(seq(
+  from=as.Date("2007-10-05"),
+  to=as.Date("2018-06-13"),
+  by="month"))
+colnames(dates) <- 'dates'
+
+dataframe <- data.frame(cbind(well_ts, wns, fitted, stat1, stat2))
+
 ## Original time series
-ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') +
+ggplot(dataframe, aes(x=dates$dates)) + geom_line(aes(y=well_ts), color='red') +
   labs(title="Stationary Time Series: Original Well Depth for Well G-561", x="Year", y="Change in Well Depth (Ft)")
 
-
 ## Stationary series -> residuals after modeling deterministic seasonality
-ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=ts_seasonal_residuals), color='green') +
+ggplot(dataframe, aes(x=dates$dates)) + geom_line(aes(y=wns), color='green') +
   labs(title="Stationary Time Series: Residuals of Deterministic Seasonality", x="Year", y="Change in Well Depth (Ft)")
 
 ## Stationary series -> residuals after modeling deterministic trend
-ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=stationary1), color='black') +
+ggplot(dataframe, aes(x=dates$dates)) + geom_line(aes(y=stat1), color='black') +
   labs(title="Stationary Time Series: Residuals of Deterministic Trend", x="Year", y="Change in Well Depth (Ft)")
 
 ## Stationary series -> residuals after modeling deterministic seasonality and trend
-ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=stationary2), color='purple') +
+ggplot(dataframe, aes(x=dates$dates)) + geom_line(aes(y=stat2), color='purple') +
   labs(title="Stationary Time Series: Residuals of Deterministic Seasonality and Trend", x="Year", y="Change in Well Depth (Ft)")
 
 ## Comparison of original data and residuals after removing deterministic seasonality
-ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + 
-  geom_line(aes(y=ts_seasonal_residuals), color='green') +
+ggplot(dataframe, aes(x=dates$dates)) + geom_line(aes(y=well_ts), color='red') + 
+  geom_line(aes(y=wns), color='green') +
   labs(title="Comparison Between Original and Residuals of Deterministic Seasonality", x="Year", y="Change in Well Depth (Ft)")
 
 # CLEAN ENVIRONMENT
