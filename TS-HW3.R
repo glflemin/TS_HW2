@@ -132,16 +132,27 @@ summary(pot_trend2)               ## Coefficient of t is significant but very sm
 stat1 <- pot_trend1$residuals
 stat2 <- pot_trend2$residuals
 
-# PLOT STATIONARY TIME SERIES
-# appears stationary around y = 1.0
-dataframe2 <- data.frame(cbind(well_ts, wns, fitted, stat1, stat2))
-ggplot(dataframe2, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=fitted), color='blue') 
+## Original time series
+ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') +
+  labs(title="Stationary Time Series: Original Well Depth for Well G-561", x="Year", y="Change in Well Depth (Ft)")
 
-ggplot(dataframe2, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') +geom_line(aes(y=wns), color='green')
- 
-ggplot(dataframe2, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=stat1), color='black') 
 
-ggplot(dataframe2, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + geom_line(aes(y=stat2), color='purple')
+## Stationary series -> residuals after modeling deterministic seasonality
+ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=ts_seasonal_residuals), color='green') +
+  labs(title="Stationary Time Series: Residuals of Deterministic Seasonality", x="Year", y="Change in Well Depth (Ft)")
+
+## Stationary series -> residuals after modeling deterministic trend
+ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=stationary1), color='black') +
+  labs(title="Stationary Time Series: Residuals of Deterministic Trend", x="Year", y="Change in Well Depth (Ft)")
+
+## Stationary series -> residuals after modeling deterministic seasonality and trend
+ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=stationary2), color='purple') +
+  labs(title="Stationary Time Series: Residuals of Deterministic Seasonality and Trend", x="Year", y="Change in Well Depth (Ft)")
+
+## Comparison of original data and residuals after removing deterministic seasonality
+ggplot(dataframe, aes(x=1:length(well_ts))) + geom_line(aes(y=well_ts), color='red') + 
+  geom_line(aes(y=ts_seasonal_residuals), color='green') +
+  labs(title="Comparison Between Original and Residuals of Deterministic Seasonality", x="Year", y="Change in Well Depth (Ft)")
 
 # CLEAN ENVIRONMENT
 #rm(list=ls(-ts.final))
